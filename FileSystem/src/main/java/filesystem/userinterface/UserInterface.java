@@ -2,7 +2,6 @@ package filesystem.userinterface;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
@@ -16,16 +15,21 @@ import filesystem.readfile.ReadFileUtils;
 public class UserInterface {
 
 	static Properties properties;
-	public static void main(String[] args) throws IOException, InterruptedException {
+
+	public static void main(String[] args) throws IOException {
 
 		loadProperties();
 		Executor executor = Executors.newFixedThreadPool(10);
-		for(int i = 0;i<2;i++) {
+		Scanner sc = new Scanner(System.in);
+		int noOfUsers = sc.nextInt();
+		sc.close();
+		for (int i = 0; i < noOfUsers; i++) {
 			executor.execute(new ProcessThread(properties));
 		}
 
 	}
-	private static void loadProperties() throws FileNotFoundException, IOException {
+
+	private static void loadProperties() throws IOException {
 		properties = new Properties();
 		properties.load(new FileInputStream(new File("filesystem.properties")));
 	}
@@ -53,37 +57,16 @@ class ProcessThread implements Runnable {
 					System.out.println("Enter 3 for deleting it");
 					choice = scanner.nextInt();
 					switch (choice) {
-					case 1: {
-						CreateFileUtils createFileUtils = new CreateFileUtils(scanner, properties);
-						boolean isCreated = createFileUtils.createFile();
-						if (isCreated) {
-							System.out.println("File created successfully");
-						} else {
-							System.out.println("File not created successfully");
-						}
-						break;
-					}
-
-					case 2: {
-						ReadFileUtils readFileUtils = new ReadFileUtils(scanner);
-						String content = readFileUtils.readFile();
-						if (content != null) {
-							System.out.println(content);
-						}
-						break;
-					}
-					case 3: {
-
-						DeleteFileUtils deleteFileUtils = new DeleteFileUtils(scanner);
-						boolean isDeleted = deleteFileUtils.deleteFile();
-						if (isDeleted) {
-							System.out.println("File deleted successfully");
-						} else {
-							System.out.println("File not deleted successfully");
-						}
+					case 1:
+						createFile(scanner);
 						break;
 
-					}
+					case 2:
+						readFile(scanner);
+						break;
+					case 3:
+						deleteFile(scanner);
+						break;
 					}
 					System.out.println("Do you want to continue?(y/n)");
 					continueTask = scanner.next();
@@ -95,5 +78,46 @@ class ProcessThread implements Runnable {
 		}
 	}
 
-}
+	private void deleteFile(Scanner scanner) {
+		try {
+			DeleteFileUtils deleteFileUtils = new DeleteFileUtils(scanner, properties);
+			boolean isDeleted = deleteFileUtils.deleteFile();
+			if (isDeleted) {
+				System.out.println("File deleted successfully");
+			} else {
+				System.out.println("File not deleted successfully");
+			}
 
+		} catch (Exception e) {
+
+		}
+
+	}
+
+	private void readFile(Scanner scanner) {
+		try {
+			ReadFileUtils readFileUtils = new ReadFileUtils(scanner, properties);
+			String content = readFileUtils.readFile();
+			if (content != null) {
+				System.out.println(content);
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
+	public void createFile(Scanner scanner) {
+		try {
+			CreateFileUtils createFileUtils = new CreateFileUtils(scanner, properties);
+			boolean isCreated = createFileUtils.createFile();
+			if (isCreated) {
+				System.out.println("File created successfully");
+			} else {
+				System.out.println("File not created successfully");
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
+}

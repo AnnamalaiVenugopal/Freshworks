@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -75,10 +76,10 @@ public class CommonFileUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static JSONObject isKeyFound(String key) {
+	public static JSONObject isKeyFound(String key, Properties properties) {
 		JSONObject resultJson = new JSONObject();
 		try {
-			String filePath = "data".concat(File.separator);
+			String filePath = properties.getProperty("fileLocation").concat(File.separator).concat("data").concat(File.separator);
 			File file = new File(filePath);
 			if (!file.exists()) {
 				file.mkdirs();
@@ -137,10 +138,10 @@ public class CommonFileUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean deleteIfFound(String key) {
+	public static boolean deleteIfFound(String key, Properties properties) {
 		boolean isDeleted = false;
 		try {
-			String filePath = "data".concat(File.separator);
+			String filePath = properties.getProperty("fileLocation").concat(File.separator).concat("data").concat(File.separator);
 			File file = new File(filePath);
 			if (!file.exists()) {
 				file.mkdirs();
